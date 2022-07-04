@@ -26,7 +26,7 @@
 
 	SELECT * 
 	FROM `students` 
-	WHERE DIFFERENCE('NOW()', `date_of_birth`) => 30;
+	WHERE DIFFERENCE('NOW()', `date_of_birth`) => 30; ??? da sistemare
 
     SELECT * FROM `students` WHERE `date_of_birth` < '1992%';
 
