@@ -1,0 +1,391 @@
+Importare file db_university.sql(GZ) su phpMyAdmin
+
+Soluzione Query
+
+1. Selezionare tutti gli studenti nati nel 1990 (160)
+
+	SELECT * 
+	FROM `students`
+	WHERE `date_of_birth` BETWEEN '1990-01-01' AND '1990-12-31';
+
+	SELECT * 
+	FROM `students` 
+	WHERE `date_of_birth` LIKE "1990%";
+
+	SELECT * 
+	FROM `students` 
+	WHERE YEAR(`date_of_birth`) = 1990
+	ORDER BY `date_of_birth` ASC;
+
+
+
+2. Selezionare tutti i corsi che valgono più di 10 crediti (479)
+
+	SELECT * 
+	FROM `courses` 
+	WHERE `cfu` > 10
+	ORDER BY `cfu`;
+
+
+
+3. Selezionare tutti gli studenti che hanno più di 30 anni
+
+	SELECT *
+	FROM `students`
+	WHERE TIMESTAMPDIFF(YEAR, `date_of_birth`, CURRENT_DATE()) > 30
+	ORDER BY `date_of_birth` DESC;
+
+	SELECT *
+	FROM `students`
+	WHERE `date_of_birth` < DATE_SUB(CURRENT_DATE(), INTERVAL 31 YEAR)
+	ORDER BY `date_of_birth` DESC;
+
+     SELECT * 
+	FROM `students` 
+	WHERE `date_of_birth` < '1992%';
+
+
+
+4. Selezionare tutti i corsi del primo semestre del primo anno di un qualsiasi corso di laurea (286)
+
+	SELECT * 
+	FROM `courses` 
+	WHERE `period` = 'I semestre' AND `year` = 1;
+
+
+
+5. Selezionare tutti gli appelli d'esame che avvengono nel pomeriggio (dopo le 14) del 20/06/2020 (21)
+
+    	SELECT * 
+    	FROM `exams` 
+    	WHERE `date` = '2020-06-20' AND `hour` > '14:00:00';
+
+	SELECT * 
+	FROM `exams` 
+	WHERE `date` = '2020-06-20' AND hour(`hour`) >= 14;
+
+
+
+6. Selezionare tutti i corsi di laurea magistrale (38)
+
+    	SELECT * 
+    	FROM `degrees` 
+    	WHERE `level` = 'magistrale';
+
+    	SELECT * 
+    	FROM `degrees` 
+    	WHERE `name` LIKE "%Magistrale%";
+
+
+7. Da quanti dipartimenti è composta l'università? (12)
+
+    SELECT COUNT(`id`) as 'Numero dipartimenti'
+    FROM `departments`;
+
+
+
+8. Quanti sono gli insegnanti che non hanno un numero di telefono? (50)
+
+    SELECT COUNT(`id`) as 'Numero insegnanti che non hanno telefono'
+    FROM `teachers` 
+    WHERE `phone` IS NULL;
+
+
+
+9. Selezionare tutti gli insegnanti
+
+	SELECT * 
+	FROM `teachers`;
+
+
+
+10. Selezionare tutti i referenti per ogni dipartimento
+
+	SELECT `name`,`head_of_department`
+	FROM `departments`;
+
+
+
+11. Selezionare tutti gli studenti il cui nome inizia per "E" (373)
+
+	SELECT *
+	FROM `students`
+	WHERE `name` LIKE "E%";
+
+
+
+12. Selezionare tutti gli studenti che si sono iscritti nel 2021 (734)
+
+	SELECT * 
+	FROM `students`
+	WHERE '2021-01-01' <= `enrolment_date` AND `enrolment_date` <= '2021-12-31';
+
+	SELECT * 
+	FROM `students` 
+	WHERE `enrolment_date` LIKE "2021%";
+
+	SELECT * 
+	FROM `students` 
+	WHERE `enrolment_date` BETWEEN '2021-01-01' AND '2021-12-31';
+
+	SELECT * 
+	FROM `students` 
+	WHERE YEAR(`enrolment_date`) = 2021
+
+	SELECT COUNT(`id`) 
+	FROM `students`
+	WHERE YEAR(`enrolment_date`) = 2021;
+
+
+
+13. Selezionare tutti i corsi che non hanno un sito web (676)
+
+	SELECT *
+	FROM `courses`
+	WHERE `website` IS NULL;
+
+
+
+14. Selezionare tutti gli insegnanti che hanno un numero di telefono (50)
+
+	SELECT * 
+	FROM `teachers` 
+	WHERE `phone` IS NOT NULL;
+
+
+
+15. Selezionare tutti gli appelli d'esame dei mesi di giugno e luglio 2020 (2634)
+
+	SELECT *
+	FROM `exams`
+	WHERE `date` BETWEEN '2020-06-01' AND '2021-07-31';
+
+	SELECT *
+	FROM `exams`
+	WHERE YEAR(`date`) = 2020 AND MONTH(`date`) in (6,7);
+
+
+
+16. Qual'è il numero totale degli studenti iscritti? (5000)
+
+	SELECT COUNT(`id`) 
+	FROM `students`;
+
+
+
+17. Selezionare tutti i corsi del Corso di Laurea in Informatica (22)
+
+	SELECT *
+	FROM `courses`
+	JOIN `degrees`
+	ON courses.degree_id = degrees.id
+	WHERE degrees.name = 'Corso di Laurea in Ingegneria Informatica';
+
+	
+
+18. Selezionare le informazioni sul corso id = 144, con tutti i relativi appelli d'esame
+
+	SELECT *
+	FROM `exams`
+	JOIN `courses`
+	ON exams.course_id = courses.id
+	WHERE courses.id = 144;
+
+
+
+19. Selezionare a quale dipartimento appartiene il Corso di Laurea in Diritto dell'Economia
+	(Dipartimento di Scienze politiche, giuridiche e studi internazionali)
+
+	SELECT departments.name
+	FROM degrees
+	JOIN departments
+	ON degrees.department_id = departments.id
+	WHERE degrees.name = "Corso di Laurea in Diritto dell'Economia";
+
+
+
+20. Selezionare tutti gli appelli d'esame del Corso di Laurea Magistrale in Fisica del primo anno
+	
+	SELECT exams.date, exams.hour, courses.year, degrees.name
+	FROM `exams`
+	JOIN `courses` ON exams.course_id = courses.id
+	JOIN `degrees` ON courses.degree_id = degrees.id
+	WHERE degrees.name = 'Corso di Laurea Magistrale in Fisica' AND courses.year = 1;
+	
+
+
+21. Selezionare tutti i docenti che insegnano nel Corso di Laurea in Lettere (21)
+
+	SELECT teachers.name, teachers.surname, degrees.name
+	FROM `teachers`
+	JOIN `course_teacher` ON teachers.id = course_teacher.teacher_id
+	JOIN `courses` ON course_teacher.course_id = courses.id
+	JOIN `degrees` ON courses.degree_id = degrees.id
+	WHERE degrees.name = "Corso di Laurea in Lettere";
+
+
+
+22. Selezionare il libretto universitario di Mirco Messina (matricola n. 620320)
+
+	SELECT students.name, students.surname, students.registration_number, exams.date, exam_student.vote, courses.name, courses.cfu
+	FROM `students`
+	JOIN `exam_student` ON exam_student.student_id = students.id
+	JOIN `exams` ON exam_student.exam_id = exams.id
+	JOIN `courses` ON exams.course_id = courses.id
+	WHERE students.name = 'Mirco' AND students.surname = 'Messina' AND exam_student.vote >= 18;
+
+
+
+23. Selezionare il voto medio di superamento d'esame per ogni corso, con anche i dati del corso di laurea associato,
+	ordinati per media voto decrescente
+
+	SELECT courses.name, round(AVG(exam_student.vote), 1) as media, degrees.*
+	FROM `exams`
+	JOIN `exam_student` ON exam_student.exam_id = exams.id
+	JOIN `courses` ON exams.course_id = courses.id
+	JOIN `degrees` ON courses.degree_id = degrees.id
+	GROUP BY courses.id
+	ORDER BY media DESC
+
+
+
+QUERY CON GROUP BY
+
+24. Contare quanti iscritti ci sono stati ogni anno
+
+	SELECT YEAR(`enrolment_date`) as 'anno', COUNT(`id`)
+	FROM `students`
+	GROUP BY YEAR(`enrolment_date`);
+
+
+
+25. Contare gli insegnanti che hanno l'ufficio nello stesso edificio
+
+	SELECT COUNT(`id`) as 'Numero insegnanti', `office_address`
+	FROM `teachers` 
+	GROUP BY `office_address`;
+
+
+
+26. Calcolare la media dei voti di ogni appello d'esame
+
+	SELECT exams.date , round(AVG(exam_student.vote), 1) as media 
+	FROM `exams`
+	JOIN `exam_student` ON exams.id = exam_student.exam_id
+	GROUP BY exams.date;
+
+	SELECT `exam_id`, ROUND(AVG(`vote`),0) as media_voti FROM `exam_student` GROUP BY `exam_id`;
+
+
+
+27. Contare quanti corsi di laurea ci sono per ogni dipartimento
+
+	SELECT COUNT(degrees.name) as 'Numero Corsi di Laurea', departments.name
+	FROM `departments`
+	JOIN `degrees` ON degrees.department_id = degrees.id
+	GROUP BY departments.name;
+
+	SELECT `department_id`, COUNT(`id`) as numero_corsi_di_laurea FROM `degrees` GROUP BY `department_id`;
+
+
+
+QUERY CON JOIN
+
+28. Selezionare tutti gli studenti iscritti al Corso di Laurea in Economia
+
+	SELECT students.registration_number as matricola, students.name, students.surname, degrees.name as corso_di_laurea 
+	FROM students 
+    	JOIN degrees ON students.degree_id = degrees.id 
+	WHERE degrees.name = 'Corso di Laurea in Economia'; 
+
+
+
+29. Selezionare tutti i Corsi di Laurea Magistrale del Dipartimento di Neuroscienze
+
+	SELECT degrees.name as corso_di_laurea, departments.name as dipartimento
+	FROM degrees 
+    	JOIN departments on degrees.department_id = departments.id
+	WHERE departments.name = 'Dipartimento di Neuroscienze' AND degrees.level = 'magistrale';
+
+
+
+30. Selezionare tutti i corsi in cui insegna Fulvio Amato (id = 44)
+
+	SELECT courses.name, courses.period, courses.year
+	FROM courses
+    	JOIN course_teacher ON courses.id = course_teacher.course_id
+    	JOIN teachers ON course_teacher.teacher_id = teachers.id
+	WHERE teachers.id = 44;
+
+
+
+31. Selezionare tutti gli studenti con i dati relativi al corso di laurea a cui sono iscritti e il relativo dipartimento,
+	in ordine alfabetico per cognome e nome
+
+	SELECT students.surname as cognome, students.name as nome, students.registration_number as matricola, degrees.name as corso_di_laurea, departments.name as dipartimento
+	FROM students
+	JOIN degrees ON students.degree_id = degrees.id
+    	JOIN departments ON degrees.department_id = departments.id
+	ORDER BY students.surname, students.name ASC;
+
+
+
+32. Selezionare tutti i corsi di laurea con i relativi corsi e insegnanti
+
+	SELECT degrees.name as corso_di_laurea, courses.name as corso, courses.period, courses.year, teachers.name, teachers.surname
+	FROM degrees
+	JOIN courses ON degrees.id = courses.degree_id
+    	JOIN course_teacher ON courses.id = course_teacher.course_id
+    	JOIN teachers ON course_teacher.teacher_id = teachers.id;
+
+
+
+33. Selezionare tutti i docenti che insegnano nel Dipartimento di Matematica (54)
+
+	SELECT DISTINCT teachers.*, departments.name
+	FROM teachers
+	JOIN course_teacher ON teachers.id = course_teacher.teacher_id
+    	JOIN courses ON course_teacher.course_id = courses.id
+    	JOIN degrees ON courses.degree_id = degrees.id
+    	JOIN departments ON degrees.department_id = departments.id
+	WHERE departments.name = 'Dipartimento di Matematica'
+	ORDER BY teachers.surname, teachers.name ASC;
+
+34. BONUS: Selezionare per ogni studente quanti tentativi d'esame ha sostenuto per superare ciascuno dei suoi esami
+
+35. Contare i corsi raggruppati per cfu
+
+	SELECT `cfu`, COUNT(`id`) as 'Numero corsi per numero CFU'
+	FROM `courses`
+	GROUP BY `cfu`;
+
+
+
+36. Contare gli studenti raggruppati per anno di nascita
+
+	SELECT COUNT(`id`) as "Numero studenti", YEAR(`date_of_birth`) as "Anno"
+	FROM `students`
+	GROUP BY YEAR(`date_of_birth`);
+
+37. Selezionare il voto piu basso dato ad ogni appello d'esame
+
+	SELECT `exam_id`, MIN(`vote`) as 'Voto più basso'
+	FROM `exam_student`
+	GROUP BY `exam_id`;
+
+
+38. Contare gli appelli d'esame del mese di luglio raggruppati per giorno
+
+	SELECT COUNT(`id`) as 'Numero appelli per esame', DAY(`date`) as 'Giorno di luglio'
+	FROM `exams`
+	WHERE `date` BETWEEN '2020-07-01' AND '2020-07-31'
+	GROUP BY DAY(`date`);
+
+	SELECT DAY(`date`) as 'Giorno di luglio', COUNT(`id`) as 'Numero appelli per esame'
+	FROM `exams`
+	WHERE MONTH(`date`) = 7
+	GROUP BY DAY(`date`);
+
+
+
+
